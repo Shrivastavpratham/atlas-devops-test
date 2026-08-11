@@ -1,0 +1,23 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  build-and-deploy:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build image
+        run: docker build -t atlas-backend:${{ github.sha }} -f app/Dockerfile app/
+
+      - name: Load image into kind
+        run: kind load docker-image atlas-backend:${{ github.sha }} --name devops-test
+
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl set image deployment/backend backend=atlas-backend:${{ github.sha }} -n atlas
+          kubectl rollout status deployment/backend -n atlas --timeout=90s
