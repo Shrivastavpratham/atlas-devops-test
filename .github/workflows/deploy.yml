@@ -17,7 +17,11 @@ jobs:
       - name: Load image into kind
         run: kind load docker-image atlas-backend:${{ github.sha }} --name devops-test
 
-      - name: Deploy to Kubernetes
-        run: |
-          kubectl set image deployment/backend backend=atlas-backend:${{ github.sha }} -n atlas
-          kubectl rollout status deployment/backend -n atlas --timeout=90s
+      - name: Apply manifests
+        run: kubectl apply -f k8s/
+
+      - name: Set image
+        run: kubectl set image deployment/backend backend=atlas-backend:${{ github.sha }} -n atlas
+
+      - name: Wait for rollout
+        run: kubectl rollout status deployment/backend -n atlas --timeout=90s
