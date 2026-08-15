@@ -26,7 +26,7 @@ app.get('/', async (req, res) => {
     await pool.query(`CREATE TABLE IF NOT EXISTS visits (id SERIAL PRIMARY KEY, ts TIMESTAMP DEFAULT NOW())`);
     await pool.query('INSERT INTO visits DEFAULT VALUES');
     const { rows } = await pool.query('SELECT COUNT(*) FROM visits');
-    res.json({ message: 'Atlas infra check', visits: rows[0].count });
+    res.json({ message: 'Atlas infra check V2', visits: rows[0].count });
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
